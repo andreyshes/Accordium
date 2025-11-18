@@ -1,0 +1,88 @@
+"use client";
+
+import React, { useState } from "react";
+import { Send, MessageCircle, User } from "lucide-react";
+
+interface Comment {
+	id: string;
+	author: string;
+	message: string;
+	created_at: string;
+}
+
+interface CommentsProps {
+	comments: Comment[];
+	onSubmit: (text: string) => Promise<void>;
+}
+
+export default function Comments({ comments, onSubmit }: CommentsProps) {
+	const [input, setInput] = useState("");
+	const [loading, setLoading] = useState(false);
+
+	async function handleSubmit(e: React.FormEvent) {
+		e.preventDefault();
+		if (!input.trim()) return;
+
+		setLoading(true);
+		await onSubmit(input.trim());
+		setInput("");
+		setLoading(false);
+	}
+
+	return (
+		<div className="border rounded-lg p-6 space-y-6 bg-white dark:bg-gray-900">
+			<h2 className="text-lg font-semibold flex items-center gap-2">
+				<MessageCircle className="h-5 w-5 text-blue-500" /> Comments
+			</h2>
+
+			{/* Comments List */}
+			<div className="space-y-5 max-h-[350px] overflow-y-auto pr-2">
+				{comments.length === 0 && (
+					<p className="text-gray-500 text-sm">No comments yet.</p>
+				)}
+
+				{comments.map((c) => (
+					<div key={c.id} className="flex gap-3 items-start">
+						<div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+							<User className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+						</div>
+
+						<div className="flex-1">
+							<div className="flex items-center justify-between">
+								<span className="font-medium text-gray-800 dark:text-gray-200">
+									{c.author}
+								</span>
+								<span className="text-xs text-gray-500 dark:text-gray-400">
+									{new Date(c.created_at).toLocaleString()}
+								</span>
+							</div>
+
+							<p className="text-sm text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-line">
+								{c.message}
+							</p>
+						</div>
+					</div>
+				))}
+			</div>
+
+			{/* Input Box */}
+			<form onSubmit={handleSubmit} className="flex items-center gap-2">
+				<input
+					type="text"
+					value={input}
+					onChange={(e) => setInput(e.target.value)}
+					placeholder="Write a comment..."
+					className="flex-1 border rounded-md px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+				/>
+
+				<button
+					type="submit"
+					disabled={loading}
+					className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-sm flex items-center gap-2 disabled:opacity-50"
+				>
+					<Send className="h-4 w-4" />
+				</button>
+			</form>
+		</div>
+	);
+}

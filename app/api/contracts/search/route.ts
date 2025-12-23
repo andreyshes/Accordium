@@ -34,10 +34,7 @@ export async function GET(req: Request) {
 	function mapContract(c: any): Contract {
 		return {
 			...c,
-			// Cast to union safely
-			status: allowedStatuses.includes(c.status)
-				? (c.status as ContractStatus)
-				: "draft",
+			status: allowedStatuses.includes(c.status) ? c.status : "draft",
 		};
 	}
 

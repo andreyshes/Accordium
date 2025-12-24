@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseServer } from "@/app/lib/supabaseServer";
 import { Contract } from "@/types/Contract";
 import { ContractStatus } from "@/app/contracts/ContractStatusBadge";
+import apiError from "@/app/lib/api-error";
 
 export async function GET(req: Request) {
 	const supabase = supabaseServer();
@@ -22,7 +23,7 @@ export async function GET(req: Request) {
 
 	const { data, error } = await query;
 
-	if (error) return NextResponse.json({ error }, { status: 500 });
+	if (error) return apiError("Failed to fetch contracts", 500);
 
 	const allowedStatuses: ContractStatus[] = [
 		"draft",
